@@ -1,72 +1,120 @@
-# SafeSpace: AI-Powered Digital Violence Prevention Platform
+# React + Vite + shadcn/ui Starter Template
 
-## Overview
+A modern React starter template built with Vite, TypeScript, Tailwind CSS, and shadcn/ui components.
 
-SafeSpace is a web-based application designed to combat digital violence and provide immediate support to individuals facing online harassment. It leverages real-time threat analysis, offers a rapid emergency response system, and provides access to educational resources and survivor support networks. The platform is built with a focus on user privacy, speed, and accessibility, utilizing a modern tech stack to deliver a secure and responsive experience.
+## 🚀 Features
 
-Our mission is to create a safer digital environment by empowering users with tools to protect themselves and access help when they need it most. The project's name, 'SafeSpace', reflects this core commitment.
+- ⚡️ **Vite** - Fast build tool and development server
+- ⚛️ **React 18** - Latest React with hooks support
+- 🎯 **TypeScript** - Type safety and better developer experience
+- 🎨 **Tailwind CSS** - Utility-first CSS framework
+- 🧩 **shadcn/ui** - Beautifully designed components built with Radix UI
+- 📦 **Path Mapping** - Clean imports with `@/` prefix
 
-## Core Features
+## 📦 Included shadcn/ui Components
 
-- **Real-time Harassment Detection:** A sophisticated monitoring system analyzes incoming digital communications (e.g., social media comments, messages) for harmful content. The threat level is visualized through a dynamic, generative art display that changes in intensity and color based on the detected risk.
-- **Emergency Response System:** A floating action button (FAB) provides one-tap access to an emergency modal. This system includes:
-    - A 10-second countdown to prevent false alarms.
-    - Automated sharing of the user's location with trusted contacts.
-    - Covert audio recording for evidence collection.
-    - A 'safe word' feature to discreetly cancel the alert.
-- **Anonymous Survivor Support:** A dedicated page offering resources, articles, and links to real-world support organizations. This section is designed to be a safe, anonymous space for users to find help and information.
-- **Gamified Educational Modules:** Interactive learning modules that teach users how to recognize, report, and protect themselves from various forms of digital violence. Users can unlock modules sequentially, complete quizzes, and earn achievement badges to encourage engagement.
-- **Integrated Home Dashboard:** A central hub that provides an at-a-glance view of the user's safety status, quick access to all major features, and a seamless user experience.
-- **Loading Screen:** A simple, calming loading screen featuring the 'SafeSpace' logo to ensure a smooth initial entry into the application.
+- Button
+- Card
+- Input
+- Label
+- Badge
+- Dialog
+- And more...
 
-## Tech Stack
+## 🛠️ Getting Started
 
-- **Frontend:** React 19.1.1, Vite, Tailwind CSS
-- **UI/UX:** 
-    - **Icons:** Lucide React for crisp, lightweight icons.
-    - **Animations:** Framer Motion for smooth page transitions and component animations.
-    - **Notifications:** Sonner for non-intrusive toast notifications.
-    - **Styling:** Tailwind CSS with a custom theme designed for clarity, trust, and accessibility.
+1. **Install dependencies**
 
-## Design Philosophy
+   ```bash
+   npm install
+   ```
 
-The UI/UX of SafeSpace is guided by three principles:
+2. **Start development server**
 
-1.  **Safety & Trust:** The color palette uses calming and authoritative colors. Blues and grays establish a sense of security, while reds and oranges are reserved for critical alerts.
-2.  **Simplicity & Clarity:** The interface is minimalist and intuitive, ensuring that users can find and use critical features quickly, especially under stress.
-3.  **Empowerment:** The design avoids creating a sense of fear. Instead, it aims to empower users by giving them control over their digital safety through clear, accessible tools.
+   ```bash
+   npm run dev
+   ```
 
-## Installation and Setup
+3. **Build for production**
 
-**Prerequisites:**
-- Node.js (v18 or higher)
-- npm
+   ```bash
+   npm run build
+   ```
 
-**Running the project locally:**
+4. **Preview production build**
+   ```bash
+   npm run preview
+   ```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    ```
-2.  **Navigate to the project directory:**
-    ```bash
-    cd safespace-project
-    ```
-3.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-4.  **Start the development server:**
-    ```bash
-    npm run dev
-    ```
+## 📁 Project Structure
 
-The application will be available at `http://localhost:5173`.
+```
+src/
+├── components/
+│   └── ui/              # shadcn/ui components
+├── lib/
+│   └── utils.ts         # Utility functions
+├── App.tsx              # Main application component
+├── index.css            # Global styles with Tailwind
+└── main.tsx             # Application entry point
+```
 
-## Usage
+## 🎨 Customization
 
-- **Navigate** through the app using the header links: Home, Education, and Support.
-- **Monitor** your digital safety status on the Home page via the Harassment Status component.
-- **Activate** the emergency system by clicking the shield icon FAB in the bottom-right corner.
-- **Explore** educational content in the 'Educational Modules' page.
-- **Find** resources and help in the 'Survivor Support' page.
+### Adding New shadcn/ui Components
+
+This template is pre-configured with shadcn/ui. You can add more components by creating them in the `src/components/ui/` directory.
+
+### Tailwind Configuration
+
+The Tailwind configuration is set up with shadcn/ui color variables. You can customize colors and other design tokens in:
+
+- `tailwind.config.js` - Tailwind configuration
+- `src/index.css` - CSS custom properties for themes
+
+### TypeScript Configuration
+
+Path mapping is configured for clean imports:
+
+```typescript
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+```
+
+## 🌗 Dark Mode
+
+The template includes dark mode support through Tailwind's `dark:` classes and CSS custom properties.
+
+## 📚 Learn More
+
+- [Vite Documentation](https://vitejs.dev/)
+- [React Documentation](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Radix UI](https://www.radix-ui.com/)
+
+## 🤝 Contributing
+
+Feel free to submit issues and enhancement requests!
+
+**⚡ Powered by [Dala](https://dala.gebeya.com)** - The AI-powered web development platform that helps you build full-stack applications faster.
+
+---
+
+## 🤖 What is Dala?
+
+**[Gebeya Dala](https://dala.gebeya.com)** is an intelligent web development platform that accelerates your React development workflow. Build, preview, and deploy web applications, and instant development environments.
+
+🔗 **Try Dala:** [dala.gebeya.com](https://dala.gebeya.com)
+
+### Why Use Dala?
+
+- **AI-Powered Development** - Get intelligent code suggestions and automated component generation
+- **Instant Preview** - See your changes live in real-time sandbox environments
+- **Zero Setup** - No local environment configuration needed
+- **Collaborative** - Build and share projects with your team
+- **Deployment Ready** - One-click deployment to production
+
+---
+
+Built with ❤️ by the Dala team to help developers build faster and smarter.
