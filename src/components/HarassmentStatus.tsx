@@ -1,99 +1,163 @@
-import { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, TrendingUp, TrendingDown, Circle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { useEffect, useRef } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 
-// Mock sentiment data for demonstration
-const sentiments = ['Positive', 'Neutral', 'Negative', 'Hostile'];
-const sentimentConfig = {
-  Positive: { color: 'text-green-500', icon: <TrendingUp /> },
-  Neutral: { color: 'text-gray-500', icon: <Circle /> },
-  Negative: { color: 'text-yellow-500', icon: <TrendingDown /> },
-  Hostile: { color: 'text-red-500', icon: <AlertTriangle /> },
+type ThreatLevel = 'calm' | 'low' | 'medium' | 'high' | 'critical';
+
+interface Props {
+  threatLevel: ThreatLevel;
+}
+
+const threatConfig = {
+  calm: { color: '#34C759', label: 'SAFE', particles: 50, speed: 0.5, chaos: 1 },
+  low: { color: '#FFCC00', label: 'LOW RISK', particles: 75, speed: 1, chaos: 2 },
+  medium: { color: '#FF9500', label: 'MODERATE', particles: 100, speed: 1.5, chaos: 4 },
+  high: { color: '#FF3B30', label: 'HIGH RISK', particles: 150, speed: 2.5, chaos: 8 },
+  critical: { color: '#AF0000', label: 'CRITICAL', particles: 200, speed: 4, chaos: 12 },
 };
 
-export default function HarassmentStatus() {
-  const [isDetected, setIsDetected] = useState(false);
-  const [sentiment, setSentiment] = useState('Positive');
+class Particle {
+  x: number;
+  y: number;
+  size: number;
+  speedX: number;
+  speedY: number;
+  config: typeof threatConfig[ThreatLevel];
+
+  constructor(effect: Effect) {
+    this.config = effect.config;
+    this.x = Math.random() * effect.width;
+    this.y = Math.random() * effect.height;
+    this.size = Math.random() * 3 + 1;
+    this.speedX = (Math.random() - 0.5) * this.config.speed;
+    this.speedY = (Math.random() - 0.5) * this.config.speed;
+  }
+
+  update(effect: Effect) {
+    this.config = effect.config;
+    this.x += this.speedX + (Math.random() - 0.5) * this.config.chaos * 0.1;
+    this.y += this.speedY + (Math.random() - 0.5) * this.config.chaos * 0.1;
+
+    if (this.x > effect.width || this.x < 0) this.speedX *= -1;
+    if (this.y > effect.height || this.y < 0) this.speedY *= -1;
+
+    if (this.x > effect.width) this.x = effect.width;
+    if (this.x < 0) this.x = 0;
+    if (this.y > effect.height) this.y = effect.height;
+    if (this.y < 0) this.y = 0;
+  }
+
+  draw(context: CanvasRenderingContext2D) {
+    context.fillStyle = this.config.color;
+    context.beginPath();
+    context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    context.fill();
+  }
+}
+
+class Effect {
+  canvas: HTMLCanvasElement;
+  width: number;
+  height: number;
+  particles: Particle[];
+  config: typeof threatConfig[ThreatLevel];
+
+  constructor(canvas: HTMLCanvasElement, threatLevel: ThreatLevel) {
+    this.canvas = canvas;
+    this.width = canvas.width;
+    this.height = canvas.height;
+    this.particles = [];
+    this.config = threatConfig[threatLevel];
+    this.createParticles();
+  }
+
+  setConfig(threatLevel: ThreatLevel) {
+    const newConfig = threatConfig[threatLevel];
+    this.config = newConfig;
+    const particleDifference = newConfig.particles - this.particles.length;
+    if (particleDifference > 0) {
+      for (let i = 0; i < particleDifference; i++) {
+        this.particles.push(new Particle(this));
+      }
+    } else {
+      this.particles.splice(0, -particleDifference);
+    }
+  }
+
+  createParticles() {
+    this.particles = [];
+    for (let i = 0; i < this.config.particles; i++) {
+      this.particles.push(new Particle(this));
+    }
+  }
+
+  handleParticles(context: CanvasRenderingContext2D) {
+    this.particles.forEach(particle => {
+      particle.update(this);
+      particle.draw(context);
+    });
+  }
+}
+
+
+export default function HarassmentStatus({ threatLevel }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const effectRef = useRef<Effect | null>(null);
+  const controls = useAnimation();
+  const config = threatConfig[threatLevel];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newIsDetected = Math.random() > 0.7;
-      setIsDetected(newIsDetected);
-      if (newIsDetected) {
-        const newSentiment = sentiments[Math.floor(Math.random() * (sentiments.length -1)) + 1];
-        setSentiment(newSentiment);
-      } else {
-        setSentiment('Positive');
-      }
-    }, 5000);
+    controls.start({
+      borderColor: config.color,
+      boxShadow: `0 0 20px ${config.color}33`,
+      transition: { duration: 0.5 },
+    });
+  }, [threatLevel, controls, config.color]);
 
-    return () => clearInterval(interval);
-  }, []);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-  const statusConfig = {
-    safe: {
-      bgColor: 'bg-green-100 dark:bg-green-900/50',
-      textColor: 'text-green-700 dark:text-green-300',
-      borderColor: 'border-green-500',
-      icon: <Shield className='w-8 h-8 mr-4' />,
-      title: 'Monitoring Active: All Clear',
-      message: 'UbuntuNet is actively monitoring your digital spaces. No threats detected.',
-    },
-    detected: {
-      bgColor: 'bg-red-100 dark:bg-red-900/50',
-      textColor: 'text-red-700 dark:text-red-300',
-      borderColor: 'border-red-500',
-      icon: <AlertTriangle className='w-8 h-8 mr-4' />,
-      title: 'ALERT: Harmful Content Detected',
-      message: 'Potential digital violence has been identified. Reviewing options.',
-    },
-  };
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 
-  const currentStatus = isDetected ? statusConfig.detected : statusConfig.safe;
-  const currentSentiment = sentimentConfig[sentiment as keyof typeof sentimentConfig];
+    if (!effectRef.current) {
+        effectRef.current = new Effect(canvas, threatLevel);
+    }
+    effectRef.current.setConfig(threatLevel);
+
+    let animationFrameId: number;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      effectRef.current?.handleParticles(ctx);
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [threatLevel]);
 
   return (
-    <motion.div 
-      layout
-      className={cn('p-6 rounded-xl border-l-4 shadow-lg transition-all duration-500', currentStatus.bgColor, currentStatus.borderColor)}>
-      <div className='flex items-center'>
-        {currentStatus.icon}
-        <div>
-          <h3 className={cn('font-bold text-xl', currentStatus.textColor)}>{currentStatus.title}</h3>
-          <p className={cn('text-sm', currentStatus.textColor, 'opacity-80')}>{currentStatus.message}</p>
-        </div>
-      </div>
-      <AnimatePresence>
-        {isDetected && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0, marginTop: 0 }} 
-            animate={{ opacity: 1, height: 'auto', marginTop: '1rem' }} 
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className='overflow-hidden'>
-            <div className='border-t border-gray-300 dark:border-gray-700 pt-4'>
-              <h4 className='font-semibold text-gray-800 dark:text-gray-200 mb-2'>AI Sentiment Analysis</h4>
-              <div className='flex items-center'>
-                <div className={cn('w-6 h-6 mr-3', currentSentiment.color)}>{currentSentiment.icon}</div>
-                <span className={cn('font-medium text-lg', currentSentiment.color)}>{sentiment}</span>
-              </div>
-              <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-3'>
-                <motion.div 
-                  className={cn('h-2.5 rounded-full', {
-                    'bg-green-500': sentiment === 'Positive',
-                    'bg-gray-500': sentiment === 'Neutral',
-                    'bg-yellow-500': sentiment === 'Negative',
-                    'bg-red-500': sentiment === 'Hostile',
-                  })}
-                  initial={{ width: '0%' }}
-                  animate={{ width: sentiment === 'Positive' ? '25%' : sentiment === 'Neutral' ? '50%' : sentiment === 'Negative' ? '75%' : '100%' }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <motion.div
+      animate={controls}
+      className="relative w-full h-64 md:h-80 rounded-2xl border-2 bg-gray-900/20 overflow-hidden flex items-center justify-center"
+    >
+      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+      <motion.div 
+        key={threatLevel}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="z-10 text-center"
+      >
+        <p className="text-white text-lg font-medium">Threat Analysis</p>
+        <h2 className="text-6xl font-bold" style={{ color: config.color }}>
+          {config.label}
+        </h2>
+      </motion.div>
     </motion.div>
   );
 }
